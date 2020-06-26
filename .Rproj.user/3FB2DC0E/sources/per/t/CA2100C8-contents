@@ -1,0 +1,398 @@
+#Fiche TP3 ACP
+
+##########################################################################
+# Exercice 1
+###########################################################################
+# ACP sur la table swiss
+###########################################################################
+
+# Donn?es
+
+data(swiss)
+edit(swiss)
+
+#R?sum? statistique
+summary(swiss)
+
+
+#exploration graphique des donn?es
+
+#Boite ? mostaches
+boxplot(swiss)
+
+#Histogramme 
+
+layout(matrix(c(1:6),2,3))
+for(i in 1:6) {hist(swiss[,i],main=names(swiss)[i],xlab="")}
+layout(1)
+
+
+
+#Nuage de points
+
+pairs(swiss,main="Donn?es SWISS")
+
+
+
+
+
+#le calcul de l'ACP. Les r?sultats sont stock?s dans la variable swisspca
+
+swisspca <- princomp(swiss,cor=T)
+
+
+##D?scription des composantes principales: R?sum? statistique du r?sultat de l'acp
+
+summary(swisspca)
+
+#l'?boulis des valeurs propres en %
+
+
+inertie<-swisspca$sdev^2/sum(swisspca$sdev^2)*100
+barplot(inertie,ylab="% d'inertie",names.arg=round(inertie,2))
+title("Eboulis des valeurs propres en %")
+
+#ou 
+# Tracer le scree plot (des valeurs propres)
+
+plot(swisspca ,main="Les valeurs propres en %")
+
+
+# ou encore
+
+screeplot(swisspca)
+
+
+#repr?sentation graphique du plan principal
+
+#swisspca$scores : repr?sentent les coordon?es des individus sur les deux premi?res composantes pricipales
+
+#swisspca$loadings :  repr?sentent les coordon?es des variables sur les deux premi?res composantes pricipales
+
+
+#les coordonn?es sur les deux premi?res composantes pricipales ( lignes et colonnes)
+
+cl1<-swisspca$scores[,1]; cc1<-swisspca$loadings[,1]; cl2<-swisspca$scores[,2]; cc2<-swisspca$loadings[,2]
+
+#graphique du plan des individus actifs
+
+plot(cl1,cl2,type="n",main="Les individus",xlim=c(-6,6))
+abline(h=0,v=0)
+text(cl1,cl2,row.names(swisspca$scores))
+
+#graphique du plan des variables actives
+
+plot(cc1,cc2,type="n",main="Les variables",xlim=c(-1,1),ylim=c(-1,1),
+asp=1,ylab= "Comp2",xlab= "Comp1")
+abline(h=0,v=0)
+text(cc1,cc2,row.names(swisspca$loadings))
+symbols(0,0,circles=1,inches=FALSE,add=TRUE)
+
+#ou
+# Tracer le cercle de corr?lation
+
+a <- seq(0,2*pi,length=100)
+plot(cos(a), sin(a), type='l', lty=3, xlab='comp 1', ylab='comp 2')
+title(main="Cercle des corr?lations")
+# On trace ? pr?sent les fl?ches
+v <- t(swisspca$loadings)[1:2,]
+arrows(0,0, v[1,], v[2,], col='red')
+abline(h=0,v=0)
+text(v[1,], v[2,],colnames(v))
+
+
+
+#Repr?sentation graphique simultan?e des individus et variables(le biplot)
+
+biplot(princomp(swiss),main="Repr?sentation
+simultan?e",xlim=c(-0.4,+0.4))
+abline(v=0,h=0)
+
+
+#Qualit? de repr?sentation
+
+#qualit? de repr?sentation des individus (le cosinus au carr? de l'angle entre 
+# chaque individu et les 2 prmi?res composantes)
+
+
+x=swisspca$scores
+QLT=x^2/matrix(rep(apply(x^2,1,sum),ncol(x^2)),dim(x^2));QLT[,1:2]
+
+#qualit? de repr?sentation des variables (le cosinus au carr? de l'angle entre 
+# chaque variable et les 2 prmi?res composantes)
+
+
+x=swisspca$loadings
+QLT=x^2/matrix(rep(apply(x^2,1,sum),ncol(x^2)),dim(x^2));QLT[,1:2]
+
+# Corr?lation variables - composantes principales
+cor(swiss, swisspca$scores)
+
+
+
+#Visualisation des classes sur le 1er plan factoriel 
+
+#Faire un Kmeans
+
+res <- kmeans(swiss,3)
+
+#Projection des classes sur les premi?res composantes principales
+
+plot(predict(swisspca),col=res$cluster)
+text(cl1,cl2,row.names(swisspca$scores),)
+
+#ou
+# Faire K-means sur les composantes principales
+
+res=kmeans(swisspca$scores ,3)
+
+# Visualiser les classes
+
+ plot(swisspca$scores,col=res$cluster)
+text(cl1,cl2,row.names(swisspca$scores),)
+
+
+
+
+
+##########################################################################
+# Exercice2
+###########################################################################
+
+
+#Charger les donn?es
+
+setwd("C:\\Users\\Samy\\Documents\\M1 MLDS\\S2\\Data Science 2\\TP\\TP3")
+
+X = read.table('proteine.txt',header=T)
+row.names(X)=X$Pays
+X=X[,-1]
+str(X)
+
+
+
+
+
+# Obtenir des r?sum?s statistiques univari?s et bivari?s
+summary(X)
+
+boxplot(X)
+
+
+
+#Histogramme 
+
+layout(matrix(c(1:9),3,3))
+for(i in 1:9) {hist(X[,i],main=names(X)[i],xlab="")}
+layout(1)
+
+
+
+#Nuage de points
+
+pairs(X,,main="Donn?es Prot?ines")
+
+
+#Faire une acp
+
+pc <- princomp(X,cor=T)
+
+#D?scription des composantes principales
+ 
+summary(pc)
+
+# Tracer le scree plot (des valeurs propres)
+
+screeplot(pc)
+
+# Repr?sentation  des individus  sur le 1er plan factoriel
+
+biplot(pc, cex=0.7,col=c(1,0)) 
+abline(h=0,v=0)
+
+# Repr?sentation  des variables  sur le 1er plan factoriel
+biplot(pc, cex=0.7,col=c(0,1)) 
+abline(h=0,v=0)
+
+# Repr?sentation simultan?e des individus 
+# et des variables sur le 1er plan factoriel
+
+ biplot(pc,cex=0.7,,main="Repr?sentation simultan?e")
+ abline(h=0,v=0)
+
+# Tracer le cercle de corr?lation
+
+a <- seq(0,2*pi,length=100)
+plot(cos(a), sin(a), type='l', lty=3, xlab='comp 1', ylab='comp 2')
+title(main="Cercle des corr?lations")
+# On trace ? pr?sent les fl?ches
+v <- t(pc$loadings)[1:2,]
+arrows(0,0, v[1,], v[2,], col='red')
+text(v[1,], v[2,],colnames(v))
+
+
+#graphique du plan des individus actifs
+
+plot(pc$scores[,1],pc$scores[,3],main="Les individus",xlim=c(-6,6))
+abline(h=0,v=0)
+text(pc$scores[,1],pc$scores[,3],row.names(pc$scores))
+
+
+plot(pc$loadings[,1],pc$loadings[,3],main="Les individus",xlim=c(-6,6))
+abline(h=0,v=0)
+text(pc$loadings[,1],pc$loadings[,3],row.names(pc$loadings))
+
+#Qualit? de repr?sentation
+
+#qualit? de repr?sentation des individus (le cosinus au carr? de l'angle entre 
+# chaque individu et les 2 prmi?res composantes)
+
+
+x=pc$scores
+QLT=x^2/matrix(rep(apply(x^2,1,sum),ncol(x^2)),dim(x^2));QLT[,1:2]
+
+#qualit? de repr?sentation des variables (le cosinus au carr? de l'angle entre 
+# chaque variable et les 2 prmi?res composantes)
+
+
+x=pc$loadings
+QLT=x^2/matrix(rep(apply(x^2,1,sum),ncol(x^2)),dim(x^2));QLT[,1:2]
+
+# Corr?lation variables - composantes principales
+cor(X, pc$scores)
+
+
+
+
+
+
+
+#Visualisation des classes sur le 1er plan factoriel 
+
+#Faire un Kmeans
+
+res <- kmeans(X,3)
+
+#Projection des classes sur les premi?res composantes principales
+
+plot(predict(pc),col=res$cluster)
+
+
+
+
+
+###########################################################################
+##             Faire une acp en utilisant  FactoMineR                     #
+###########################################################################
+
+
+#Centrage et r?duction des donn?es
+X<-scale(X, center = TRUE, scale = TRUE)
+library(FactoMineR)
+acp=PCA(X,ncp=8,graph=F)
+acp=PCA(X,ncp=8,graph=T)
+acp
+
+#D?scription des composantes principales
+
+acp$eig
+
+#l'?boulis des valeurs propres
+plot(acp$eig[,1],ylab="% inertie",main="Les valeurs propres")
+barplot(acp$eig[,1],ylab="% inertie",main="Les valeurs propres")
+text(acp$eig[,1],row.names(acp$eig))
+
+inertie<-acp$eig[,1]/sum(acp$eig[,1])*100
+barplot(inertie,ylab="% d'inertie",names.arg=round(inertie,2))
+title("Eboulis des valeurs propres en %")
+
+#repr?sentation graphique du plan principal
+acp=PCA(X,ncp=8,graph=T)
+
+plot(acp, choix = "var") # Cercle des corr?lations
+plot(acp, choix = "ind") # projection des individus
+
+## Repr?sentation  des individus  sur le 1er plan factoriel
+
+plot(acp$ind$coord[,1],acp$ind$coord[,2],ylab="Comp2",xlab="comp1",type="n",main="Les individus")
+abline(h=0,v=0)
+text(acp$ind$coord[,1],acp$ind$coord[,2],row.names(X))
+
+
+#repr?sentation graphique du plan principal
+## Repr?sentation  des variabless  sur le 1er plan factoriel
+
+plot(acp$var$coord[,1],acp$var$coord[,2],type="n",main="Les individus")
+abline(h=0,v=0)
+text(acp$var$coord[,1],acp$var$coord[,2],row.names(acp$var$coord))
+
+plot(acp$var$cor[,1],acp$var$cor[,2],type="n",xlim=c(-1,1),ylim=c(-1,1),main="Les individus")
+abline(h=0,v=0)
+text(acp$var$cor[,1],acp$var$cor[,2],row.names(acp$var$coord))
+symbols(0,0,circles=1,inches=FALSE,add=TRUE)
+
+## Contribution des individus  sur le 1er plan factoriel
+
+acp$ind$contrib
+edit(acp$ind$contrib)
+
+## Qualit?  de repr?sentation des individus  sur le 1er plan factoriel
+
+acp$ind$cos2
+edit(acp$ind$cos2)
+## Contribution des variables  sur le 1er plan factoriel
+
+acp$var$contrib
+edit(acp$var$contrib)
+## Qualit?  de repr?sentation des variables  sur le 1er plan factoriel
+
+acp$var$cos2
+edit(acp$var$cos2)
+
+acp$var$cor
+edit(acp$var$cor)
+###########################################################################
+##         Conclusion de l'ACP                                            #
+#1) nombre d'axes                                                         #
+#2) pourcentage d'inertie expliqu?par le premier plan factoriel                       # 
+#3) les variable qui d?rigent le premier axe :                            #
+#4) les variable qui d?rigent le deuxi?me axe :                           # 
+#5) Interpr?tation de la projection des individus (les pays) :            #                                        #
+###########################################################################
+
+
+
+
+
+
+
+
+
+
+###ACP avec FactoMineR ###
+#res.pca = PCA(X2, scale.unit=TRUE, ncp=3, graph=T) 
+#res.pca
+
+ ##res.pca Results for the Principal Component Analysis (PCA)**
+ ## The analysis was performed on 23 individuals, described by 4 variables
+##The results are available in the following objects:
+  
+#  name               description                          
+#1  "$eig"             "eigenvalues"                        
+#2  "$var"             "results for the variables"          
+#3  "$var$coord"       "coord. for the variables"           
+#4  "$var$cor"         "correlations variables - dimensions"
+#5  "$var$cos2"        "cos2 for the variables"             
+#6  "$var$contrib"     "contributions of the variables"     
+#7  "$ind"             "results for the individuals"        
+#8  "$ind$coord"       "coord. for the individuals"         
+#9  "$ind$cos2"        "cos2 for the individuals"           
+#10 "$ind$contrib"     "contributions of the individuals"   
+#11 "$call"            "summary statistics"                 
+#12 "$call$centre"     "mean of the variables"              
+#13 "$call$ecart.type" "standard error of the variables"    
+#14 "$call$row.w"      "weights for the individuals"        
+#15 "$call$col.w"      "weights for the variables"
+
+
+####

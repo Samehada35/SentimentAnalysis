@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1586628320458.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1179800176",
+    "id" : "5B8FD67F",
+    "lastKnownWriteTime" : 1586630888,
+    "last_content_update" : 1586630888540,
+    "path" : "~/M1 MLDS/S2/Data Science 2/Clustering_M1/CAH-K-means_avec_R/TP5_classification_v1.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "91,7",
+        "scrollLine" : "0",
+        "source_window_id" : ""
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

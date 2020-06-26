@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1586627952317.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "126765560",
+    "id" : "763A2282",
+    "lastKnownWriteTime" : 1581675455,
+    "last_content_update" : 1581675455,
+    "path" : "~/M1 MLDS/S2/Data Science 2/TP/TP2/Rappel_acp_avec_r.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "152,23",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 13,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

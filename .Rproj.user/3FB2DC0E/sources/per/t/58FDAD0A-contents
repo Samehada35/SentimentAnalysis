@@ -1,0 +1,46 @@
+
+
+setwd("C:\\Users\\Samy\\Documents\\M1 MLDS\\S2\\Data Science 2")
+
+
+X1 = read.table('media.csv',sep=';',header=T)
+
+X2=X1[1:7,2:7]
+X2
+
+row.names(X2)=X1$CSP[1:7]
+X2
+
+library(FactoMineR)
+AFC=CA(X2,ncp=5,row.sup=NULL,col.sup=NULL,graph=TRUE)
+
+
+#*******************
+#AFC avec FactoMineR
+#*******************
+
+#charger le package
+library(FactoMineR)
+
+#lancer l'AFC
+media.afc <- CA(X2,ncp=2,graph=FALSE)
+
+#liste des objets disponibles
+print(attributes(media.afc))
+
+#quelques statistiques sur le tableau de donn?es
+print(media.afc$call)
+
+#tableau des valeurs propres et Scree plot
+print(media.afc$eig)
+plot(media.afc$eig[,1],type="b",main="Scree plot")
+
+#coordonn?es, contributions et cos2 - lignes
+print(media.afc$row)
+
+#coordonn?es, contributions et cos2 - colonnes
+print(media.afc$col)
+
+#graphique
+plot(media.afc,cex=0.75)
+

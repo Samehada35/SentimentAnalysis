@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1586635131151.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3845332623",
+    "id" : "58FDAD0A",
+    "lastKnownWriteTime" : 1583487179,
+    "last_content_update" : 1583487179,
+    "path" : "~/M1 MLDS/S2/Data Science 2/TP/TP3/CodeR_AFC.R",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "14,42",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

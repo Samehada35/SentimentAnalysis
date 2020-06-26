@@ -1,0 +1,278 @@
+
+##########################################################################
+# TP Classification automatique
+##########################################################################
+
+# Importation des donnees
+# lecture des donn?es avec le nom des variables
+# en premi?re ligne
+
+#Donn?es ocde
+setwd("C:/Users/pc/Documents/Cours/FD/Cours_FD_MIAGE/Cours3_FD16/Cours3_FD_MIAGE")
+
+X=read.table("ocdeR.dat")
+#description des variables
+str(X)
+n=nrow(X)
+m=ncol(X)
+
+##########################################################################
+# Statistiques Descriptives
+summary(X)
+
+
+#Histogramme 
+
+layout(matrix(c(1:12),3,4))
+for(i in 1:11) {hist(X[,i],main=names(X)[i],xlab="")}
+layout(1)
+
+#Boite ? moustaches (Boxplot)
+boxplot(X)
+
+#Nuage de points
+
+pairs(X)
+
+##CAH et repr?sentation par ACP##
+##########################################################################
+#Centrage et r?duction des donn?es
+don<-scale(X, center = TRUE, scale = TRUE)
+
+#Calcul du tableau des distances
+dc<-dist(X, method ="euclidean", diag=FALSE, upper=FALSE)
+
+#Pour r?aliser une CAH
+
+hc <- hclust(dc,method='single')
+hc <- hclust(dc^2,method='ward')
+hc
+
+#Pour visualiser le dendrogramme
+ 
+plot(hc)
+
+plot(hc,hang=-1)
+
+#Pour avoir la partition en 5 classes :
+
+class=cutree(hc,5)
+
+#Tracer les nuages de points en foction des classes de la partition obtenue:
+# Permet de voir quelles sont les variables les plus discriminantes
+
+pairs(X,col=class)
+
+# Pour savoir ce qu'il y a dans l'objet hc :
+
+unclass(hc)
+
+#La composante height donne les valeurs (ou indices) de la hi?rarchie :
+
+hc$height
+
+# tracer un rectangle sur les classes
+
+plot(hc,hang=-1)
+rect.hclust(hc, k=5, border="red") 
+
+
+# Visualiser les classes sur le premier plan factoriel
+
+library(cluster)
+
+clusplot(dc,class,diss=T,shade=T,color=T,labels=3,main="")
+abline(v=0,h=0)
+
+#ou en utilisant le resultat de l'acp 
+# graphe de l?acp avec les couleurs
+# des classes de la cah
+
+library (FactoMineR)
+acp=PCA(X,ncp=8,graph=T)
+plot(acp,choix="ind", habillage="ind",col.hab=class)
+
+
+
+# Faire une CAH selon diff?rents crit?res d'agr?gation
+
+
+dc=dist(don)
+par(mfrow=c(2,3))
+possible <- c("ward", "single", "complete", "average", "mcquitty","median",
+"centroid")
+for(k in 1:5) plot(hclust(dc,possible[k]),hang=-1,main=possible[k])
+plot(hclust(dc^2,"ward"),hang=-1,main="inertie interclasse")
+
+##########################################################################
+#Choix du nombre de classes
+
+# # choix du nombre de classes (utliser les indices de la hi?rarchie hc$height ? utilier avec ward sur le carr? de la distance dc^2)
+
+plot(hc$height[67 :1],type="b")
+plot(hc$height[67 :50],type="b")
+
+# # choix du nombre de classes : utiliser le Rsquare (R2) et PseudoF
+#Choix du nombre de classes
+
+m=ncol(X)
+n=nrow(X)
+
+R2=0
+x=X
+Iinter = 0
+g = apply(x, 2, mean)
+I = sum(diag(var(x))) # Inertie totale
+
+dendro=hclust(dc,"single")
+dendro=hclust(dc,"ward")
+
+for(i in 2:n){
+class = cutree(dendro,k=i)
+ncl = unique(class)
+d = numeric(length(ncl))
+nb = integer(length(ncl))
+for(j in ncl){
+nb[j] = sum(class==j)
+if(nb[j]>1){
+m = apply(x[class==j,], 2, mean)
+} else {
+m = x[class==j,]
+}
+d[j] = sum((m-g)^2)
+}
+Iinter = (1/n)*sum(nb*d)
+R2[i] = Iinter/I
+}
+R2
+ncl = 2:(n-1)
+PseudoF = (R2[ncl]/(ncl-1))/((1-R2[ncl])/(n-ncl))
+
+plot(1:(n-1),R2[1:(n-1)], type = 'b', xlab = "Nombre de classes", ylab = "Rsquare")
+title("Indice du R2")
+
+plot(ncl[1:n-1],PseudoF[1:n-1], type = 'b', xlab = "Nombre de classes", ylab = "PseudoF")
+title("Indice du PseudoF")
+
+
+layout(matrix(c(1:2),1,2))
+plot(1:(n-1),R2[1:(n-1)], type = 'b', xlab = "Nombre de classes", ylab = "Rsquare")
+title("Indice du R2")
+plot(ncl[1:(n-1)],PseudoF[1:(n-1)], type = 'b', xlab = "Nombre de classes", ylab = "PseudoF")
+title("Indice du PseudoF")
+layout(1)
+
+Intra=I-R2
+Intra
+plot(1:(n-1),Intra[1:(n-1)], type = 'b', xlab = "Nombre de classes", ylab = "Inertie Intracalsse")
+title("Inertie intraclasse")
+
+##########################################################################
+#Caract?risation des classes
+
+################################################################################
+# Statistiques
+#
+nclass=5;
+n=nrow(x) 
+nvar=ncol(x)
+nclass=length(unique(class))
+repartition=matrix(nrow=1,ncol=nclass)
+moyenne=matrix(nrow=nvar,ncol=nclass)
+ecart=matrix(nrow=nvar,ncol=nclass)
+
+rownames(repartition)=c("Nb observations")
+colnames(repartition)=1:nclass
+
+rownames(moyenne)=colnames(x)
+colnames(moyenne)=1:nclass
+
+rownames(ecart)=colnames(x)
+colnames(ecart)=1:nclass
+
+for(i in 1:nclass){
+  repartition[i]=sum(class==i)
+  moyenne[,i] = apply(x[class==i,],2,mean)
+  ecart[,i] = sqrt(apply(x[class==i,],2,var))
+}
+
+###########################################################################
+##             Faire un K-means                                           #
+###########################################################################
+
+#Faire un Kmeans
+
+#Centrage et r?duction des donn?es
+X<-scale(X, center = TRUE, scale = TRUE)
+
+res <- kmeans(X,5)
+res
+
+# D?terminer le nombre de classes
+
+# Tracer l'?volution de l'inertie intra classe en fonction du nombre de classes
+
+mydata=X
+# Evolution de l'inertie inraclasse
+mydata=don
+wss <- (nrow(mydata)-1)*sum(apply(mydata,2,var))
+for (i in 2:15) wss[i] <- sum(kmeans(mydata, centers=i)$withinss)
+plot(1:15, wss, type="b", xlab="Nombre de classes",ylab="Somme des carr?s intra classe") 
+
+
+# Evolution de linertie interclasse
+bss=0
+for (i in 2:15) bss[i] <- sum(kmeans(mydata, centers=i)$betweenss)
+plot(1:15, bss, type="b", xlab="Nombre de classes",ylab="Somme des carr?s inter classe") 
+
+
+layout(matrix(c(1:2),1,2))
+plot(1:15, wss, type="b", xlab="Nombre de classes",ylab="Somme des carr?s intra classe") 
+plot(1:15, bss, type="b", xlab="Nombre de classes",ylab="Somme des carr?s inter classe") 
+layout(1)
+
+
+#Projection des classes sur les premi?res composantes principales
+
+plot(acp$ind$coord,col=res$cluster, pch=19, cex=2)
+text(acp$ind$coord[,1],acp$ind$coord[,2],row.names(acp$ind$coord))
+abline(v = 0, h = 0)
+
+
+# version avec r?duction
+
+kmpr=kmeans(X,5)
+
+color=kmpr$cluster
+
+plot(acp,choix="ind", habillage="ind",col.hab=color)
+
+##version sur facteurs
+
+# Faire K-means sur les composantes principales
+
+kmpr=kmeans(acp$ind$coord ,5)
+kmpr
+
+# Faire K-means sur les (K-1) composantes principales (ou K est le nombre de classes)
+kmpr=kmeans(acp$ind$coord[,c(1,2,3,4)] ,5)
+
+
+color1=kmpr$cluster
+
+plot(acp,choix="ind", habillage="ind",col.hab=color1)
+
+layout(matrix(c(1:2),1,2))
+plot(acp,choix="ind", habillage="ind",col.hab=color)
+plot(acp,choix="ind",habillage="ind",col.hab=color1)
+layout(1)
+
+
+
+
+
+
+
+
+
+

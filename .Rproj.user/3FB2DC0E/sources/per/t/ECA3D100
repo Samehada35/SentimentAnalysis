@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1586467485074.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1054550169",
+    "id" : "ECA3D100",
+    "lastKnownWriteTime" : 1586791190,
+    "last_content_update" : 1586791190850,
+    "path" : "C:/Users/Samy/Desktop/Projet DS/twitter_mining.R",
+    "project_path" : "twitter_mining.R",
+    "properties" : {
+        "cursorPosition" : "542,0",
+        "scrollLine" : "511",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
